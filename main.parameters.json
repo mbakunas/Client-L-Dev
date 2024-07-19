@@ -1,0 +1,58 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "vnets": {
+      "value": [
+        {
+          "name": "VNET-EASTUS2-HUB-01",
+          "resourceGroupName": "VNetRG1",
+          "resourceGroupLocation": "eastus2",
+          "location": "eastus2",
+          "addressPrefix": "10.0.0.0/16",
+          "subnets": [
+                  {
+                    "name": "gatewaySubnet",
+                    "addressPrefix": "10.0.0.0/27"
+                  },
+                  {
+                    "name": "dnsInbound",
+                    "addressPrefix": "10.0.0.32/28"
+                  },
+                  {
+                    "name": "dnsOutbound",
+                    "addressPrefix": "10.0.0.48/28"
+                  }
+
+                ]
+        },
+        {
+          "name": "VNET-EASTUS2-Spoke-01",
+          "resourceGroupName": "VNetRG2",
+          "resourceGroupLocation": "eastus2",
+          "location": "eastus2",
+          "addressPrefix": "10.1.0.0/16",
+          "subnets": [
+            {
+              "name": "subnet1",
+              "addressPrefix": "10.1.0.0/16"
+            }
+          ]
+        },
+        {
+          "name": "VNET-EASTUS2-Spoke-02",
+          "resourceGroupName": "VNetRG3",
+          "resourceGroupLocation": "eastus2",
+          "location": "eastus2",
+          "addressPrefix": "10.2.0.0/16",
+          "subnets": [
+            {
+              "name": "subnet1",
+              "addressPrefix": "10.2.0.0/16"
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

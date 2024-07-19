@@ -1,0 +1,144 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "_generator": {
+      "name": "bicep",
+      "version": "0.29.45.22436",
+      "templateHash": "592014553168259245"
+    }
+  },
+  "parameters": {
+    "vnets": {
+      "type": "array",
+      "defaultValue": [
+        {
+          "name": "vnet1",
+          "resourceGroupName": "VNetRG1",
+          "resourceGroupLocation": "eastus2",
+          "location": "eastus2",
+          "addressPrefix": "",
+          "subnets": [
+            {
+              "name": "subnet1",
+              "addressPrefix": "10.0.1.0/24"
+            },
+            {
+              "name": "subnet2",
+              "addressPrefix": "10.0.2.0/24"
+            }
+          ]
+        },
+        {
+          "name": "vnet2",
+          "resourceGroupName": "VNetRG1",
+          "resourceGroupLocation": "eastus2",
+          "location": "eastus2",
+          "addressPrefix": "",
+          "subnets": []
+        }
+      ]
+    }
+  },
+  "resources": [
+    {
+      "copy": {
+        "name": "rg",
+        "count": "[length(parameters('vnets'))]"
+      },
+      "type": "Microsoft.Resources/resourceGroups",
+      "apiVersion": "2024-03-01",
+      "name": "[parameters('vnets')[parameters('vnets')[copyIndex()]].resourceGroupName]",
+      "location": "[parameters('vnets')[parameters('vnets')[copyIndex()]].resourceGroupLocation]"
+    },
+    {
+      "copy": {
+        "name": "vnet",
+        "count": "[length(parameters('vnets'))]"
+      },
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2022-09-01",
+      "name": "[format('vnet{0}', parameters('vnets')[copyIndex()])]",
+      "resourceGroup": "[parameters('vnets')[parameters('vnets')[parameters('vnets')[copyIndex()]]].resourceGroupName]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "vnetName": {
+            "value": "[parameters('vnets')[parameters('vnets')[copyIndex()]].name]"
+          },
+          "vnetLocation": {
+            "value": "[parameters('vnets')[parameters('vnets')[copyIndex()]].location]"
+          },
+          "vnetAddressPrefix": {
+            "value": "[parameters('vnets')[parameters('vnets')[copyIndex()]].addressPrefix]"
+          },
+          "vnetSubnets": {
+            "value": "[parameters('vnets')[parameters('vnets')[copyIndex()]].subnets]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.29.45.22436",
+              "templateHash": "12373376761442587879"
+            }
+          },
+          "parameters": {
+            "vnetName": {
+              "type": "string"
+            },
+            "vnetLocation": {
+              "type": "string",
+              "defaultValue": "[resourceGroup().location]"
+            },
+            "vnetAddressPrefix": {
+              "type": "string"
+            },
+            "vnetSubnets": {
+              "type": "array",
+              "defaultValue": [
+                {
+                  "name": "gatewaySubnet",
+                  "addressPrefix": "10.0.0.0/27"
+                },
+                {
+                  "name": "dnsInbound",
+                  "addressPrefix": "10.0.0.32/28"
+                },
+                {
+                  "name": "dnsOutbound",
+                  "addressPrefix": "10.0.0.48/28"
+                }
+              ]
+            }
+          },
+          "resources": [
+            {
+              "type": "Microsoft.Network/virtualNetworks",
+              "apiVersion": "2024-01-01",
+              "name": "[parameters('vnetName')]",
+              "location": "[parameters('vnetLocation')]",
+              "properties": {
+                "addressSpace": {
+                  "addressPrefixes": [
+                    "[parameters('vnetAddressPrefix')]"
+                  ]
+                },
+                "subnets": "[parameters('vnetSubnets')]"
+              }
+            }
+          ]
+        }
+      },
+      "dependsOn": [
+        "[subscriptionResourceId('Microsoft.Resources/resourceGroups', parameters('vnets')[parameters('vnets')[parameters('vnets')[copyIndex()]]].resourceGroupName)]"
+      ]
+    }
+  ]
+}
