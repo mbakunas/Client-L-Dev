@@ -27,6 +27,11 @@ resource vnet 'Microsoft.Network/virtualNetworks@2024-01-01' = {
         vnetAddressPrefix
       ]
     }
-    subnets: vnetSubnets
+    subnets: [for subnet in vnetSubnets: {
+      name: subnet.name
+      properties: {
+        addressPrefix: subnet.addressPrefix
+      }
+    }]
   }
 }
