@@ -51,6 +51,17 @@ module vnet 'Modules/vnet.bicep' = [for (vnet, i) in vnets: {
   }
 }]
 
+// expressRoute gateway
+
+
+// vnet peerings
+
+
+// user defined routes
+
+
+// dns private resolver
+
 
 
 
