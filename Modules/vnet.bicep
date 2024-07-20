@@ -35,3 +35,17 @@ resource vnet 'Microsoft.Network/virtualNetworks@2024-01-01' = {
     }]
   }
 }
+
+// expressRoute gateway
+
+
+// vnet peerings
+
+
+// user defined routes
+
+
+// dns private resolver
+
+
+
