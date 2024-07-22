@@ -6,7 +6,7 @@
       "value": [
         {
           "name": "VNET-EASTUS2-HUB-01",
-          "resourceGroupName": "RSC-Test",
+          "resourceGroupName": "VNetRG1",
           "resourceGroupLocation": "eastus2",
           "location": "eastus2",
           "addressPrefix": "10.0.0.0/16",
@@ -22,13 +22,17 @@
                   {
                     "name": "dnsOutbound",
                     "addressPrefix": "10.0.0.48/28"
+                  },
+                  {
+                    "name": "AzureBastionSubnet",
+                    "addressPrefix": "10.0.0.64/26"
                   }
 
                 ]
         },
         {
           "name": "VNET-EASTUS2-Spoke-01",
-          "resourceGroupName": "RSC-Test",
+          "resourceGroupName": "VNetRG1",
           "resourceGroupLocation": "eastus2",
           "location": "eastus2",
           "addressPrefix": "10.1.0.0/16",
@@ -40,15 +44,15 @@
           ]
         },
         {
-          "name": "VNET-EASTUS2-Spoke-02",
-          "resourceGroupName": "RSC-Test",
+          "name": "VNET-EASTUS2-Onprem-01",
+          "resourceGroupName": "VNetRG1",
           "resourceGroupLocation": "eastus2",
           "location": "eastus2",
-          "addressPrefix": "10.2.0.0/16",
+          "addressPrefix": "192.168.0.0/16",
           "subnets": [
             {
               "name": "subnet1",
-              "addressPrefix": "10.2.0.0/16"
+              "addressPrefix": "192.168.0.0/16"
             }
           ]
         }
