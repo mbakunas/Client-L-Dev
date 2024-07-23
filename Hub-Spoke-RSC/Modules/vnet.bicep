@@ -21,6 +21,7 @@ param vnetSubnets array = [
 resource vnet 'Microsoft.Network/virtualNetworks@2024-01-01' = {
   name: vnetName
   location: vnetLocation
+  tags: resourceGroup().tags
   properties: {
     addressSpace: {
       addressPrefixes: [

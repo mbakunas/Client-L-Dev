@@ -1,6 +1,7 @@
 targetScope = 'resourceGroup'
 
 param vnet1Name string
+param vnet2ID string
 param vnet2Name string
 param vnet1isHub bool = false
 param vnet2isHub bool = false
@@ -13,7 +14,7 @@ resource peering2 'Microsoft.Network/virtualNetworks/virtualNetworkPeerings@2024
     allowGatewayTransit: vnet1isHub
     useRemoteGateways: vnet2isHub
     remoteVirtualNetwork: {
-      id: resourceId('Microsoft.Network/virtualNetworks', vnet2Name)
+      id: vnet2ID
     }
   }
 }

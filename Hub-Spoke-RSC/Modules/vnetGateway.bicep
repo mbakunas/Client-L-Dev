@@ -17,6 +17,7 @@ param gwSKU string
 resource gw 'Microsoft.Network/virtualNetworkGateways@2024-01-01' = {
   name: gwName
   location: gwLocation
+  tags: resourceGroup().tags
   properties: {
     gatewayType: gwType
     ipConfigurations: [
@@ -43,6 +44,7 @@ resource gw 'Microsoft.Network/virtualNetworkGateways@2024-01-01' = {
 resource publicIP 'Microsoft.Network/publicIPAddresses@2024-01-01' = {
   name: '${gwName}-IP'
   location: gwLocation
+  tags: resourceGroup().tags
   properties: {
     publicIPAllocationMethod: 'Static'
   }
