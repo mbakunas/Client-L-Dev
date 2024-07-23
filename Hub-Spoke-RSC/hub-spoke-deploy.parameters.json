@@ -10,6 +10,11 @@
           "resourceGroupLocation": "eastus2",
           "location": "eastus2",
           "addressPrefix": "10.0.0.0/16",
+          "gateway":{
+            "name": "VNET-EASTUS2-HUB-01-GW01",
+            "type": "ExpressRoute",
+            "sku": "Standard"
+          },
           "subnets": [
                   {
                     "name": "gatewaySubnet",
