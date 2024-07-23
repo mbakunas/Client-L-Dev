@@ -1,5 +1,13 @@
 targetScope = 'subscription'
 
+/*
+TODO:
+- add tags
+- move to management group scope
+- add user defined routes
+- add dns private resolver
+*/
+
 param vnets array = []
 
 //get the unique list of RG names
