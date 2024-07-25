@@ -1,0 +1,251 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "location": {
+            "type": "String"
+        },
+        "networkInterfaceName2": {
+            "type": "String"
+        },
+        "enableAcceleratedNetworking": {
+            "type": "Bool"
+        },
+        "networkSecurityGroupId": {
+            "type": "String"
+        },
+        "subnetName": {
+            "type": "String"
+        },
+        "virtualNetworkId": {
+            "type": "String"
+        },
+        "virtualMachineName": {
+            "type": "String"
+        },
+        "virtualMachineName2": {
+            "type": "String"
+        },
+        "virtualMachineComputerName2": {
+            "type": "String"
+        },
+        "virtualMachineRG": {
+            "type": "String"
+        },
+        "osDiskType": {
+            "type": "String"
+        },
+        "virtualMachineSize": {
+            "type": "String"
+        },
+        "adminUsername": {
+            "type": "String"
+        },
+        "adminPassword": {
+            "type": "SecureString"
+        },
+        "virtualMachine2Zone": {
+            "type": "String"
+        },
+        "loadBalancerId": {
+            "type": "String"
+        },
+        "backendPoolId": {
+            "type": "String"
+        },
+        "backendPoolName": {
+            "type": "String"
+        },
+        "loadBalancerRG": {
+            "type": "String"
+        }
+    },
+    "variables": {
+        "nsgId": "[parameters('networkSecurityGroupId')]",
+        "vnetId": "[parameters('virtualNetworkId')]",
+        "vnetName": "[last(split(variables('vnetId'), '/'))]",
+        "subnetRef": "[concat(variables('vnetId'), '/subnets/', parameters('subnetName'))]"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Network/networkInterfaces",
+            "apiVersion": "2022-11-01",
+            "name": "[parameters('networkInterfaceName2')]",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[concat('Microsoft.Resources/deployments/', 'AddLBBackendPool-GNHUB-FWLB01-VA-20240725130525')]"
+            ],
+            "properties": {
+                "ipConfigurations": [
+                    {
+                        "name": "ipconfig1",
+                        "properties": {
+                            "subnet": {
+                                "id": "[variables('subnetRef')]"
+                            },
+                            "privateIPAllocationMethod": "Dynamic",
+                            "loadBalancerBackendAddressPools": [
+                                {
+                                    "id": "[parameters('backendPoolId')]"
+                                }
+                            ]
+                        }
+                    }
+                ],
+                "enableAcceleratedNetworking": "[parameters('enableAcceleratedNetworking')]",
+                "networkSecurityGroup": {
+                    "id": "[variables('nsgId')]"
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Compute/virtualMachines",
+            "apiVersion": "2022-11-01",
+            "name": "[parameters('virtualMachineName2')]",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[concat('Microsoft.Network/networkInterfaces/', parameters('networkInterfaceName2'))]"
+            ],
+            "zones": [
+                "[parameters('virtualMachine2Zone')]"
+            ],
+            "plan": {
+                "name": "byol",
+                "publisher": "paloaltonetworks",
+                "product": "vmseries-flex"
+            },
+            "properties": {
+                "hardwareProfile": {
+                    "vmSize": "[parameters('virtualMachineSize')]"
+                },
+                "storageProfile": {
+                    "osDisk": {
+                        "createOption": "fromImage",
+                        "managedDisk": {
+                            "storageAccountType": "[parameters('osDiskType')]"
+                        }
+                    },
+                    "imageReference": {
+                        "publisher": "paloaltonetworks",
+                        "offer": "vmseries-flex",
+                        "sku": "byol",
+                        "version": "latest"
+                    }
+                },
+                "networkProfile": {
+                    "networkInterfaces": [
+                        {
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces', parameters('networkInterfaceName2'))]"
+                        }
+                    ]
+                },
+                "osProfile": {
+                    "computerName": "[parameters('virtualMachineComputerName2')]",
+                    "adminUsername": "[parameters('adminUsername')]",
+                    "adminPassword": "[parameters('adminPassword')]",
+                    "linuxConfiguration": {
+                        "patchSettings": {
+                            "assessmentMode": "ImageDefault",
+                            "patchMode": "ImageDefault"
+                        }
+                    }
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2017-05-10",
+            "name": "AddLBBackendPool-GNHUB-FWLB01-VA-20240725130525",
+            "properties": {
+                "mode": "Incremental",
+                "parameters": {},
+                "template": {
+                    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+                    "contentVersion": "1.0.0.0",
+                    "parameters": {},
+                    "variables": {},
+                    "resources": [
+                        {
+                            "name": "GNHUB-FWLB01-VA",
+                            "id": "/subscriptions/8f00922d-ac0c-44c3-819c-e37a1653f2d0/resourceGroups/GNHUB-NETWORK-RG/providers/Microsoft.Network/loadBalancers/GNHUB-FWLB01-VA",
+                            "type": "Microsoft.Network/loadBalancers",
+                            "location": "usgovvirginia",
+                            "tags": {},
+                            "properties": {
+                                "provisioningState": "Succeeded",
+                                "resourceGuid": "f57dfef0-c26a-4248-969a-9e6e1ead4cf6",
+                                "frontendIPConfigurations": [
+                                    {
+                                        "name": "Untrust",
+                                        "id": "/subscriptions/8f00922d-ac0c-44c3-819c-e37a1653f2d0/resourceGroups/GNHUB-NETWORK-RG/providers/Microsoft.Network/loadBalancers/GNHUB-FWLB01-VA/frontendIPConfigurations/Untrust",
+                                        "etag": "W/\"7aad4105-8525-4f0c-8568-6af003443405\"",
+                                        "type": "Microsoft.Network/loadBalancers/frontendIPConfigurations",
+                                        "properties": {
+                                            "provisioningState": "Succeeded",
+                                            "privateIPAddress": "10.12.8.164",
+                                            "privateIPAllocationMethod": "Static",
+                                            "subnet": {
+                                                "id": "/subscriptions/8f00922d-ac0c-44c3-819c-e37a1653f2d0/resourceGroups/GNHUB-NETWORK-RG/providers/Microsoft.Network/virtualNetworks/GNHUB-VNET01-VA/subnets/Untrust"
+                                            },
+                                            "privateIPAddressVersion": "IPv4"
+                                        },
+                                        "zones": [
+                                            "3",
+                                            "1",
+                                            "2"
+                                        ]
+                                    },
+                                    {
+                                        "name": "Trust",
+                                        "id": "/subscriptions/8f00922d-ac0c-44c3-819c-e37a1653f2d0/resourceGroups/GNHUB-NETWORK-RG/providers/Microsoft.Network/loadBalancers/GNHUB-FWLB01-VA/frontendIPConfigurations/Trust",
+                                        "etag": "W/\"7aad4105-8525-4f0c-8568-6af003443405\"",
+                                        "type": "Microsoft.Network/loadBalancers/frontendIPConfigurations",
+                                        "properties": {
+                                            "provisioningState": "Succeeded",
+                                            "privateIPAddress": "10.12.8.180",
+                                            "privateIPAllocationMethod": "Static",
+                                            "subnet": {
+                                                "id": "/subscriptions/8f00922d-ac0c-44c3-819c-e37a1653f2d0/resourceGroups/GNHUB-NETWORK-RG/providers/Microsoft.Network/virtualNetworks/GNHUB-VNET01-VA/subnets/Trust"
+                                            },
+                                            "privateIPAddressVersion": "IPv4"
+                                        },
+                                        "zones": [
+                                            "3",
+                                            "1",
+                                            "2"
+                                        ]
+                                    }
+                                ],
+                                "backendAddressPools": [
+                                    {
+                                        "id": "[parameters('backendPoolId')]",
+                                        "name": "[parameters('backendPoolName')]",
+                                        "properties": {}
+                                    }
+                                ],
+                                "loadBalancingRules": [],
+                                "probes": [],
+                                "inboundNatRules": [],
+                                "outboundRules": [],
+                                "inboundNatPools": []
+                            },
+                            "sku": {
+                                "name": "Standard",
+                                "tier": "Regional"
+                            },
+                            "apiVersion": "2021-05-01"
+                        }
+                    ],
+                    "outputs": {}
+                }
+            },
+            "resourceGroup": "[parameters('loadBalancerRG')]"
+        }
+    ],
+    "outputs": {
+        "adminUsername": {
+            "type": "String",
+            "value": "[parameters('adminUsername')]"
+        }
+    }
+}

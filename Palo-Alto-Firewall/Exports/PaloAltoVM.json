@@ -1,0 +1,106 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "virtualMachines_GNHUB_PAFW01_VA_name": {
+            "defaultValue": "GNHUB-PAFW01-VA",
+            "type": "String"
+        },
+        "disks_GNHUB_PAFW01_VA_OsDisk_1_5331d7b928b544b2b6e812bd918777e5_externalid": {
+            "defaultValue": "/subscriptions/8f00922d-ac0c-44c3-819c-e37a1653f2d0/resourceGroups/GNHUB-NETWORK-RG/providers/Microsoft.Compute/disks/GNHUB-PAFW01-VA_OsDisk_1_5331d7b928b544b2b6e812bd918777e5",
+            "type": "String"
+        },
+        "networkInterfaces_GNHUB_PAFW01_VA_Trust_externalid": {
+            "defaultValue": "/subscriptions/8f00922d-ac0c-44c3-819c-e37a1653f2d0/resourceGroups/GNHUB-NETWORK-RG/providers/Microsoft.Network/networkInterfaces/GNHUB-PAFW01-VA-Trust",
+            "type": "String"
+        },
+        "networkInterfaces_GNHUB_PAFW01_VA_Untrust_externalid": {
+            "defaultValue": "/subscriptions/8f00922d-ac0c-44c3-819c-e37a1653f2d0/resourceGroups/GNHUB-NETWORK-RG/providers/Microsoft.Network/networkInterfaces/GNHUB-PAFW01-VA-Untrust",
+            "type": "String"
+        },
+        "networkInterfaces_GNHUB_PAFW01_VA_FwAdmin_externalid": {
+            "defaultValue": "/subscriptions/8f00922d-ac0c-44c3-819c-e37a1653f2d0/resourceGroups/GNHUB-NETWORK-RG/providers/Microsoft.Network/networkInterfaces/GNHUB-PAFW01-VA-FwAdmin",
+            "type": "String"
+        }
+    },
+    "variables": {},
+    "resources": [
+        {
+            "type": "Microsoft.Compute/virtualMachines",
+            "apiVersion": "2024-03-01",
+            "name": "[parameters('virtualMachines_GNHUB_PAFW01_VA_name')]",
+            "location": "usgovvirginia",
+            "zones": [
+                "1"
+            ],
+            "plan": {
+                "name": "byol",
+                "product": "vmseries-flex",
+                "publisher": "paloaltonetworks"
+            },
+            "properties": {
+                "hardwareProfile": {
+                    "vmSize": "Standard_D3_v2"
+                },
+                "storageProfile": {
+                    "imageReference": {
+                        "publisher": "paloaltonetworks",
+                        "offer": "vmseries-flex",
+                        "sku": "byol",
+                        "version": "latest"
+                    },
+                    "osDisk": {
+                        "osType": "Linux",
+                        "name": "[concat(parameters('virtualMachines_GNHUB_PAFW01_VA_name'), '_OsDisk_1_5331d7b928b544b2b6e812bd918777e5')]",
+                        "createOption": "FromImage",
+                        "caching": "ReadWrite",
+                        "managedDisk": {
+                            "storageAccountType": "StandardSSD_LRS",
+                            "id": "[parameters('disks_GNHUB_PAFW01_VA_OsDisk_1_5331d7b928b544b2b6e812bd918777e5_externalid')]"
+                        },
+                        "deleteOption": "Detach",
+                        "diskSizeGB": 60
+                    },
+                    "dataDisks": []
+                },
+                "osProfile": {
+                    "computerName": "[parameters('virtualMachines_GNHUB_PAFW01_VA_name')]",
+                    "adminUsername": "tmpadm",
+                    "linuxConfiguration": {
+                        "disablePasswordAuthentication": false,
+                        "provisionVMAgent": true,
+                        "patchSettings": {
+                            "patchMode": "ImageDefault",
+                            "assessmentMode": "ImageDefault"
+                        }
+                    },
+                    "secrets": [],
+                    "allowExtensionOperations": true,
+                    "requireGuestProvisionSignal": true
+                },
+                "networkProfile": {
+                    "networkInterfaces": [
+                        {
+                            "id": "[parameters('networkInterfaces_GNHUB_PAFW01_VA_Trust_externalid')]",
+                            "properties": {
+                                "primary": true
+                            }
+                        },
+                        {
+                            "id": "[parameters('networkInterfaces_GNHUB_PAFW01_VA_Untrust_externalid')]",
+                            "properties": {
+                                "primary": false
+                            }
+                        },
+                        {
+                            "id": "[parameters('networkInterfaces_GNHUB_PAFW01_VA_FwAdmin_externalid')]",
+                            "properties": {
+                                "primary": false
+                            }
+                        }
+                    ]
+                }
+            }
+        }
+    ]
+}
