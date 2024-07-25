@@ -3,6 +3,7 @@ targetScope = 'managementGroup'
 /*
 TODO:
 - add user defined routes
+- parameterize public ip address availability zones
 */
 
 param vnets array
@@ -53,6 +54,7 @@ module vnetGW 'Modules/vnetGateway.bicep'= {
     gwType: vnets[0].gateway.type
     gwVnetName: vnets[0].name
     gwSKU: vnets[0].gateway.sku
+    gwPublicIPName: vnets[0].gateway.publicIPName
   }
   dependsOn: [vnet]
 
