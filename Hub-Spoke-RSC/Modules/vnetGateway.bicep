@@ -11,6 +11,7 @@ param gwType string
 param gwVnetName string
 param gwSKU string
 param gwPublicIPName string = '${gwName}-IP'
+param gwTags object = resourceGroup().tags
 
 
 
@@ -18,7 +19,7 @@ param gwPublicIPName string = '${gwName}-IP'
 resource gw 'Microsoft.Network/virtualNetworkGateways@2024-01-01' = {
   name: gwName
   location: gwLocation
-  tags: resourceGroup().tags
+  tags: gwTags
   properties: {
     gatewayType: gwType
     ipConfigurations: [
@@ -45,7 +46,7 @@ resource gw 'Microsoft.Network/virtualNetworkGateways@2024-01-01' = {
 resource publicIP 'Microsoft.Network/publicIPAddresses@2024-01-01' = {
   name: gwPublicIPName
   location: gwLocation
-  tags: resourceGroup().tags
+  tags: gwTags
   properties: {
     publicIPAllocationMethod: 'Static'
   }

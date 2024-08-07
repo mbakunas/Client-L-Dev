@@ -3,11 +3,14 @@ targetScope = 'managementGroup'
 /*
 TODO:
 - add user defined routes
+- add support for custom dns servers
+  - update subnets to include route tables
 - parameterize public ip address availability zones
 */
 
 param vnets array
 param tags object = {}
+param resourceGroupTags object = {}
 
 //get the unique list of RG names
 var rgNames = [for vnet in vnets:{
@@ -25,7 +28,7 @@ module rg 'Modules/resourceGroup.bicep' = [for (rg, i) in uniqueRgNames: {
   params: {
     rgName: rg.name
     rgLocation: rg.location
-    rgTags: tags
+    rgTags: resourceGroupTags
   }
 }]
 
@@ -39,8 +42,13 @@ module vnet 'Modules/vnet.bicep' = [for (vnet, i) in vnets: {
     vnetLocation: vnet.location
     vnetAddressPrefix: vnet.addressPrefix
     vnetSubnets: vnet.subnets
+    vnetDnsServers: vnet.?dnsServers ?? []
+    vnetTags: tags
   }
-  dependsOn: [rg]
+  dependsOn: [
+    rg
+    routeTables
+  ]
 }]
 
 
@@ -55,6 +63,7 @@ module vnetGW 'Modules/vnetGateway.bicep'= {
     gwVnetName: vnets[0].name
     gwSKU: vnets[0].gateway.sku
     gwPublicIPName: vnets[0].gateway.publicIPName
+    gwTags: tags
   }
   dependsOn: [vnet]
 
@@ -99,3 +108,18 @@ module hubInboundPeerings 'Modules/peering.bicep' = [for i in range(1, length(vn
 
 
 // user defined routes
+
+module routeTables 'Modules/routeTable.bicep' = [for (vnet, i) in vnets: {
+  name: 'routeTables${i}'
+  scope: resourceGroup(vnet.resourceGroupSubscriptionID, vnet.resourceGroupName)
+  params: {
+    routeTableName: vnet.routeTable.name
+    routes: vnet.routeTable.routes
+    routeTableTags: tags
+    routeTableLocation: vnet.location
+    routeTableDisableBgpRoutePropagation: vnet.routeTable.disableBgpRoutePropagation
+  }
+  dependsOn:[
+    rg
+  ]
+}]
