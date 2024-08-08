@@ -1,6 +1,6 @@
 targetScope = 'resourceGroup'
 
-param vnetName string = 'NEW-VNET-01'
+param vnetName string = 'TEST-VNET-01'
 param vnetLocation string = resourceGroup().location
 param vnetAddressPrefix string = '10.0.0.0/24'
 param vnetDnsServers array = []
@@ -11,13 +11,20 @@ param vnetSubnets array = [
     addressPrefix: '10.0.0.0/27'
   }
   {
-    name: 'dnsInbound'
+    name: 'Public'
     addressPrefix: '10.0.0.32/28'
-    routeTable: 'RT-Spoke-01-subnet1'
   }
   {
-    name: 'dnsOutbound'
+    name: 'Private'
     addressPrefix: '10.0.0.48/28'
+  }
+  {
+    name: 'FwMgmt'
+    addressPrefix: '10.0.0.64/27'
+  }
+  {
+    name: 'Corpnet00'
+    addressPrefix: '10.0.0.96/27'
   }
 ]
 param vnetTags object = resourceGroup().tags
