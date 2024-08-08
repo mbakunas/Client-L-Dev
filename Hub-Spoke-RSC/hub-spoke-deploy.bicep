@@ -2,9 +2,6 @@ targetScope = 'managementGroup'
 
 /*
 TODO:
-- add user defined routes
-- add support for custom dns servers
-  - update subnets to include route tables
 - parameterize public ip address availability zones
 */
 
