@@ -3,9 +3,13 @@
 ##
 ## Get latest from https://github.com/github/gitignore/blob/main/VisualStudio.gitignore
 
-# Excel temp file
-~$*.xlsx
-~$*.xlsm
+# Excel files
+*.xlsx
+*.xlsm
+
+# except for the parameters builder
+!ParametersFileBuilder.xlsm
+
 
 # User-specific files
 *.rsuser
