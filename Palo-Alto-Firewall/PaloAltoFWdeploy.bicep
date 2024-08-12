@@ -11,17 +11,20 @@ param firewallsVnetName string
 param firewallsPublicSubnetName string
 param firewallsPrivateSubnetName string
 param firewallsManagementSubnetName string
-param firewallsName array
+param firewallsNames array
 param firewallsVmSku string
 param firewallsAdminUsername string
 
 @secure()
 param firewallsAdminPassword string
 
+
+// variables
 var availabilitySetProperties = {
     platformFaultDomainCount: 2
     platformUpdateDomainCount: 5
 }
+var deploymentName = deployment().name
 
 var vnetSubnetPublicId = resourceId('Microsoft.Network/virtualNetworks/subnets', firewallsVnetName, firewallsPublicSubnetName)
 var vnetSubnetPrivateId = resourceId('Microsoft.Network/virtualNetworks/subnets', firewallsVnetName, firewallsPrivateSubnetName)
@@ -68,19 +71,22 @@ var loadBalancerConfig = [
       }
   }
 ]
-var firewallsConfig = [for name in firewallsName:{
-    name: name
+var firewallsConfig = [for firewall in firewallsNames:{
+    name: firewall.name
     location: loadBalancerLocation
     size: firewallsVmSku
     adminUsername: firewallsAdminUsername
     adminPassword: firewallsAdminPassword
+    privateNicName: firewall.privateNicName
+    publicNicName: firewall.publicNicName
+    managementNicName: firewall.managementNicName
   }
 ]
 
 
 // load balancer
 module loadBalancer './Modules/loadBalancer.bicep' = {
-  name: 'loadBalancer'
+  name: '${deploymentName}-loadBalancer'
   params: {
     lbName: loadBalancerName
     lbLocation: loadBalancerLocation
@@ -105,7 +111,7 @@ resource availabilitySet 'Microsoft.Compute/availabilitySets@2022-03-01' = {
  // deploy the firewalls
 
 module firewalls 'Modules/PaloAltoFirewall.bicep' = [for firewall in firewallsConfig: {
-  name: firewall.name
+  name: '${deploymentName}-${firewall.name}'
   scope: resourceGroup()
   dependsOn: [
     loadBalancer
@@ -118,8 +124,11 @@ module firewalls 'Modules/PaloAltoFirewall.bicep' = [for firewall in firewallsCo
     fwAvailabilitySetId: availabilitySet.id
     fwAdminPassword: firewall.adminPassword
     fwVnetSubnetPrivateId: vnetSubnetPrivateId
+    fwVmNicPrivateName: firewall.privateNicName
     fwVnetSubnetPublicId: vnetSubnetPublicId
+    fwVmNicPublicName: firewall.publicNicName
     fwVnetSubnetManagementId: vnetSubnetManagementId
+    fwVmNicManagementName: firewall.managementNicName
     fwVmNicPrivateLbBackendId: resourceId('Microsoft.Network/loadBalancers/backendAddressPools', loadBalancerName, loadBalancerConfig[1].backEndAddressPool.name)
     fwVmNicPublicBackendId:resourceId('Microsoft.Network/loadBalancers/backendAddressPools', loadBalancerName, loadBalancerConfig[0].backEndAddressPool.name)
   }

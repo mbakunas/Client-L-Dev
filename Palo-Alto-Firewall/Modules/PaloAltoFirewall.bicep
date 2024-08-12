@@ -33,13 +33,13 @@ param fwAdminPassword string
 
 //network parameters
 param fwVnetSubnetPrivateId string
-param fwVmNicPrivateName string = '${fwVmName}-Private-NIC'
+param fwVmNicPrivateName string
 param fwVmNicPrivateLbBackendId string
 param fwVnetSubnetPublicId string
-param fwVmNicPublicName string = '${fwVmName}-Public-NIC'
+param fwVmNicPublicName string
 param fwVmNicPublicBackendId string
 param fwVnetSubnetManagementId string
-param fwVmNicManagementName string = '${fwVmName}-Management-NIC'
+param fwVmNicManagementName string
 
 
 var paloAltoPlan = {
