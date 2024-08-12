@@ -40,6 +40,8 @@ jobs:
       - name: troubleshooting
         run: |
           ls -a
+          cd Palo-Alto-Firewall
+          ls -a
           pwd
       
       # deploy VNet template
