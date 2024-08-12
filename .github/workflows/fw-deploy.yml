@@ -1,8 +1,10 @@
 name: PaloAltoFirewallDeploy
+
+# resoure group scope
 env:
   azureRegion: East US 2
   subscriptionId: ${{ secrets.SUB_SANDBOX_5 }}
-# resoure group scope
+  resourceGroupName: 'FWTest03'
 
 # controls when the workflow will run
 on: 
@@ -39,19 +41,19 @@ jobs:
         uses: Azure/arm-deploy@v2
         id: vnet
         with:
-          scope: subscription
+          scope: resourcegroup
           deploymentName: 'Github.Actions-${{ github.workflow }}-${{ github.run_number }}'
-          subscriptionId: ${{ env.subscriptionId }}
+          resourceGroupName: ${{ env.resourceGroupName }}
           region: ${{env.azureRegion }}
-          template: /Palo-Alto-Firewall/PaloAltoFWvnetDeploy.bicep
+          template: ./Palo-Alto-Firewall/PaloAltoFWvnetDeploy.bicep
       
       # deploy Palo Alto template
       - name: Deploy Firewall
         uses: Azure/arm-deploy@v2
         with:
-          scope: subscription
+          scope: resourcegroup
           deploymentName: 'Github.Actions-${{ github.workflow }}-${{ github.run_number }}'
-          subscriptionId: ${{ env.subscriptionId }}
+          resourceGroupName: ${{ env.resourceGroupName }}
           region: ${{env.azureRegion }}
           template: ./Palo-Alto-Firewall/PaloAltoFWdeploy.bicep
           parameters: ./Palo-Alto-Firewall/PaloAltoFWdeploy.bicepparam
