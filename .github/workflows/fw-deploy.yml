@@ -38,7 +38,7 @@ jobs:
       
       # deploy VNet template
       - name: Deploy VNet
-        uses: Azure/arm-deploy@v2
+        uses: Azure/arm-deploy@v1
         id: vnet
         with:
           scope: resourcegroup
@@ -49,7 +49,7 @@ jobs:
       
       # deploy Palo Alto template
       - name: Deploy Firewall
-        uses: Azure/arm-deploy@v2
+        uses: Azure/arm-deploy@v1
         with:
           scope: resourcegroup
           deploymentName: 'Github.Actions-${{ github.workflow }}-${{ github.run_number }}'
