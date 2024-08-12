@@ -1,24 +1,45 @@
+/*
+  Before a Palo Alto Firewall can be deployed using this Bicep template, the terms and conditions must be accepted in the Azure Marketplace.
+  The following PowerShell will 'pre-accept' the terms and conditions for the VM-Series Firewall in the Azure Marketplace:
+  
+  # ensure the PowerShell execution policy is set to allow local scripts to run
+  #Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
+
+  $SubscriptionName = "your-subscription-name"
+  $planPublisher    = "paloaltonetworks"
+  $planProduct      = "vmseries-flex"
+  $planName         = "byol"
+  
+  Connect-AzAccount
+  Set-AzContext -Subscription $SubscriptionName
+  
+  # accept purchase plan terms
+  Set-AzMarketplaceTerms -Publisher $planPublisher  -Product $planProduct -Name $planName -Accept
+
+  # verify that the terms have been accepted
+  Get-AzMarketplaceTerms -Publisher $planPublisher  -Product $planProduct -Name $planName
+*/
+
 targetScope = 'resourceGroup'
 
 param fwVmName string
 param fwVmLocation string
 param fwVmSize string = 'Standard_D3_v2'
 param fwAdminUsername string
-param fwAvailablitySetId string
+param fwAvailabilitySetId string
 
 @secure()
 param fwAdminPassword string
 
 //network parameters
-param fwVnetSubnetTrustId string
-param fwVmNicTrustName string = '${fwVmName}-Trust-NIC'
-param fwVmNicTrustLbBackendId string
-param fwVnetSubnetUnTrustId string
-param fwVmNicUnTrustName string = '${fwVmName}-UnTrust-NIC'
-param fwVmNicUnTrustBackendId string
+param fwVnetSubnetPrivateId string
+param fwVmNicPrivateName string = '${fwVmName}-Private-NIC'
+param fwVmNicPrivateLbBackendId string
+param fwVnetSubnetPublicId string
+param fwVmNicPublicName string = '${fwVmName}-Public-NIC'
+param fwVmNicPublicBackendId string
 param fwVnetSubnetManagementId string
 param fwVmNicManagementName string = '${fwVmName}-Management-NIC'
-param fwVmNicManagementBackendId string
 
 
 var paloAltoPlan = {
@@ -39,12 +60,13 @@ resource paloAltoFireWall 'Microsoft.Compute/virtualMachines@2024-03-01' = {
   location: fwVmLocation
   zones:[]
   plan: paloAltoPlan
+  tags: resourceGroup().tags
   properties: {
     hardwareProfile: {
       vmSize: fwVmSize
     }
     availabilitySet: {
-      id: fwAvailablitySetId
+      id: fwAvailabilitySetId
     }
     storageProfile: {
       imageReference: paloAltoImageReference
@@ -68,13 +90,13 @@ resource paloAltoFireWall 'Microsoft.Compute/virtualMachines@2024-03-01' = {
     networkProfile: {
       networkInterfaces: [
         {
-          id: nicTrust.id
+          id: nicPrivate.id
           properties: {
-            primary: true
+            primary: false
           }
         }
         {
-          id: nicUnTrust.id
+          id: nicPublic.id
           properties: {
             primary: false
           }
@@ -82,7 +104,7 @@ resource paloAltoFireWall 'Microsoft.Compute/virtualMachines@2024-03-01' = {
         {
           id: nicManagement.id
           properties: {
-            primary: false
+            primary: true
           }
         }
       ]
@@ -90,9 +112,10 @@ resource paloAltoFireWall 'Microsoft.Compute/virtualMachines@2024-03-01' = {
   }
 }
 
-resource nicTrust 'Microsoft.Network/networkInterfaces@2020-11-01' = {
-  name: fwVmNicTrustName
+resource nicPrivate 'Microsoft.Network/networkInterfaces@2020-11-01' = {
+  name: fwVmNicPrivateName
   location: fwVmLocation
+  tags: resourceGroup().tags
   properties: {
     ipConfigurations: [
       {
@@ -100,11 +123,11 @@ resource nicTrust 'Microsoft.Network/networkInterfaces@2020-11-01' = {
         properties: {
           privateIPAllocationMethod: 'Dynamic'
           subnet: {
-            id: fwVnetSubnetTrustId
+            id: fwVnetSubnetPrivateId
           }
           loadBalancerBackendAddressPools: [
             {
-              id: fwVmNicTrustLbBackendId
+              id: fwVmNicPrivateLbBackendId
             }
           ]
         }
@@ -113,11 +136,15 @@ resource nicTrust 'Microsoft.Network/networkInterfaces@2020-11-01' = {
     enableIPForwarding: true
     nicType: 'Standard'
   }
+  dependsOn: [
+    nicPublic
+  ]
 }
 
-resource nicUnTrust 'Microsoft.Network/networkInterfaces@2020-11-01' = {
-  name: fwVmNicUnTrustName
+resource nicPublic 'Microsoft.Network/networkInterfaces@2020-11-01' = {
+  name: fwVmNicPublicName
   location: fwVmLocation
+  tags: resourceGroup().tags
   properties: {
     ipConfigurations: [
       {
@@ -125,11 +152,11 @@ resource nicUnTrust 'Microsoft.Network/networkInterfaces@2020-11-01' = {
         properties: {
           privateIPAllocationMethod: 'Dynamic'
           subnet: {
-            id: fwVnetSubnetUnTrustId
+            id: fwVnetSubnetPublicId
           }
           loadBalancerBackendAddressPools: [
             {
-              id: fwVmNicUnTrustBackendId
+              id: fwVmNicPublicBackendId
             }
           ]
         }
@@ -138,11 +165,15 @@ resource nicUnTrust 'Microsoft.Network/networkInterfaces@2020-11-01' = {
     enableIPForwarding: true
     nicType: 'Standard'
   }
+  dependsOn: [
+    nicManagement
+  ]
 }
 
 resource nicManagement 'Microsoft.Network/networkInterfaces@2020-11-01' = {
   name: fwVmNicManagementName
   location: fwVmLocation
+  tags: resourceGroup().tags
   properties: {
     ipConfigurations: [
       {
@@ -152,11 +183,6 @@ resource nicManagement 'Microsoft.Network/networkInterfaces@2020-11-01' = {
           subnet: {
             id: fwVnetSubnetManagementId
           }
-          loadBalancerBackendAddressPools: [
-            {
-              id: fwVmNicManagementBackendId
-            }
-          ]
         }
       }
     ]

@@ -11,6 +11,7 @@ resource loadBalancer 'Microsoft.Network/loadBalancers@2024-01-01' = {
   name: lbName
   location: lbLocation
   sku: lbSku
+  tags: resourceGroup().tags
   properties: {
     frontendIPConfigurations: [for lbConfig in lbConfigs: {
         name: lbConfig.frontEnd.name
@@ -60,3 +61,5 @@ resource loadBalancer 'Microsoft.Network/loadBalancers@2024-01-01' = {
     ]
   }
 }
+
+

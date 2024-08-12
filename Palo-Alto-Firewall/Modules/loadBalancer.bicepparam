@@ -11,7 +11,7 @@ param lbConfigs = [
     frontEnd: {
       name: 'Untrust-FrontEnd'
       subnet: {
-        id: '/subscriptions/f0bb6c48-80fd-445c-98cb-c38b5f817d52/resourceGroups/RSC-Test/providers/Microsoft.Network/virtualNetworks/VNET-EASTUS2-HUB-01/subnets/dnsInbound'
+        id: '/subscriptions/93ebbf00-49a3-49cf-acd2-e4a848c1da2e/resourceGroups/Firewall-Test-01/providers/Microsoft.Network/virtualNetworks/TEST-VNET-01/subnets/Public'
       }
     }
     backEndAddressPool: {
@@ -30,7 +30,7 @@ param lbConfigs = [
     frontEnd: {
       name: 'Trust-FrontEnd'
       subnet: {
-        id: '/subscriptions/f0bb6c48-80fd-445c-98cb-c38b5f817d52/resourceGroups/RSC-Test/providers/Microsoft.Network/virtualNetworks/VNET-EASTUS2-HUB-01/subnets/dnsOutbound'
+        id: '/subscriptions/93ebbf00-49a3-49cf-acd2-e4a848c1da2e/resourceGroups/Firewall-Test-01/providers/Microsoft.Network/virtualNetworks/TEST-VNET-01/subnets/Private'
       }
     }
     backEndAddressPool: {

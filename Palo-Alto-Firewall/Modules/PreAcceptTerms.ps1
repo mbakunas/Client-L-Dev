@@ -1,7 +1,7 @@
 # ensure the PowerShell execution policy is set to allow local scripts to run
 #Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
 
-$SubscriptionName = "Bakunas Sandbox 1"
+$SubscriptionName = "Bakunas Sandbox 5"
 $planPublisher    = "paloaltonetworks"
 $planProduct      = "vmseries-flex"
 $planName         = "byol"
