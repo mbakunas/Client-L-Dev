@@ -36,21 +36,13 @@ jobs:
             tenant-id: ${{ secrets.AZURE_TENANT_ID }}
             subscription-id: ${{ env.subscriptionId }}
       
-      # troubleshooting
-      - name: troubleshooting
-        run: |
-          ls -a
-          cd Palo-Alto-Firewall
-          ls -a
-          pwd
-      
       # deploy VNet template
       - name: Deploy VNet
         uses: Azure/arm-deploy@v2
         id: vnet
         with:
           scope: resourcegroup
-          deploymentName: 'Github.Actions-${{ github.workflow }}-${{ github.run_number }}'
+          deploymentName: 'Github.Actions-${{ github.workflow }}-${{ github.run_number }}-VNet'
           resourceGroupName: ${{ env.resourceGroupName }}
           region: ${{env.azureRegion }}
           template: Palo-Alto-Firewall/PaloAltoFWvnetDeploy.bicep
@@ -60,7 +52,7 @@ jobs:
         uses: Azure/arm-deploy@v2
         with:
           scope: resourcegroup
-          deploymentName: 'Github.Actions-${{ github.workflow }}-${{ github.run_number }}'
+          deploymentName: 'Github.Actions-${{ github.workflow }}-${{ github.run_number }}-FW'
           resourceGroupName: ${{ env.resourceGroupName }}
           region: ${{env.azureRegion }}
           template: Palo-Alto-Firewall/PaloAltoFWdeploy.bicep
