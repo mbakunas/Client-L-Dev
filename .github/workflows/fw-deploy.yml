@@ -4,7 +4,7 @@ name: PaloAltoFirewallDeploy
 env:
   azureRegion: East US 2
   subscriptionId: ${{ secrets.SUB_SANDBOX_5 }}
-  resourceGroupName: 'FWTest03'
+  resourceGroupName: 'FWTest04'
 
 # controls when the workflow will run
 on: 
