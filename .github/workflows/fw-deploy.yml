@@ -1,1 +1,57 @@
+name: PaloAltoFirewallDeploy
+env:
+  azureRegion: East US 2
+  subscriptionId: ${{ secrets.SUB_SANDBOX_5 }}
+# resoure group scope
 
+# controls when the workflow will run
+on: 
+    push:
+        branches:
+        - main
+        paths:
+        - "Palo-Alto-Firewall/**.bicep*"
+    
+    workflow_dispatch:
+
+permissions:
+  id-token: write             # required for OIDC login to Azure
+  contents: read              # required for authenticated repos
+  pull-requests: write        # required to write a PR comment
+
+jobs:
+    deploy:
+      runs-on: ubuntu-latest
+      steps:
+      # check out the repository to the GitHub Actions runner
+      - uses: actions/checkout@v2
+
+      # log in to Azure using OpenID Connect
+      - name: Login to Azure
+        uses: Azure/login@v1
+        with:
+            client-id: ${{ secrets.AZURE_CLIENT_ID }}
+            tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+            subscription-id: ${{ env.subscriptionId }}
+      
+      # deploy VNet template
+      - name: Deploy VNet
+        uses: Azure/arm-deploy@v1
+        id: vnet
+        with:
+          scope: subscription
+          deploymentName: 'Github.Actions-${{ github.workflow }}-${{ github.run_number }}'
+          subscriptionId: ${{ env.subscriptionId }}
+          region: ${{env.azureRegion }}
+          template: /Palo-Alto-Firewall/PaloAltoFWvnetDeploy.bicep
+      
+      # deploy Palo Alto template
+      - name: Deploy Firewall
+        uses: Azure/arm-deploy@v1
+        with:
+          scope: subscription
+          deploymentName: 'Github.Actions-${{ github.workflow }}-${{ github.run_number }}'
+          subscriptionId: ${{ env.subscriptionId }}
+          region: ${{env.azureRegion }}
+          template: ./Palo-Alto-Firewall/PaloAltoFWdeploy.bicep
+          parameters: ./Palo-Alto-Firewall/PaloAltoFWdeploy.bicepparam
