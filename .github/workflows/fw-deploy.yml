@@ -36,6 +36,12 @@ jobs:
             tenant-id: ${{ secrets.AZURE_TENANT_ID }}
             subscription-id: ${{ env.subscriptionId }}
       
+      # troubleshooting
+      - name: troubleshooting
+        run: |
+          ls -a
+          pwd
+      
       # deploy VNet template
       - name: Deploy VNet
         uses: Azure/arm-deploy@v2
@@ -45,7 +51,7 @@ jobs:
           deploymentName: 'Github.Actions-${{ github.workflow }}-${{ github.run_number }}'
           resourceGroupName: ${{ env.resourceGroupName }}
           region: ${{env.azureRegion }}
-          template: ./Palo-Alto-Firewall/PaloAltoFWvnetDeploy.bicep
+          template: Palo-Alto-Firewall/PaloAltoFWvnetDeploy.bicep
       
       # deploy Palo Alto template
       - name: Deploy Firewall
@@ -55,5 +61,5 @@ jobs:
           deploymentName: 'Github.Actions-${{ github.workflow }}-${{ github.run_number }}'
           resourceGroupName: ${{ env.resourceGroupName }}
           region: ${{env.azureRegion }}
-          template: ./Palo-Alto-Firewall/PaloAltoFWdeploy.bicep
-          parameters: ./Palo-Alto-Firewall/PaloAltoFWdeploy.bicepparam
+          template: Palo-Alto-Firewall/PaloAltoFWdeploy.bicep
+          parameters: Palo-Alto-Firewall/PaloAltoFWdeploy.bicepparam
