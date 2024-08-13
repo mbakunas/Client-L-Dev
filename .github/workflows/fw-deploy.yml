@@ -4,17 +4,16 @@ name: PaloAltoFirewallDeploy
 env:
   azureRegion: East US 2
   subscriptionId: ${{ secrets.SUB_SANDBOX_5 }}
-  resourceGroupName: 'FWTest04'
 
 # controls when the workflow will run
 on: 
-    push:
-        branches:
-        - main
-        paths:
-        - "Palo-Alto-Firewall/**.bicep*"
-    
     workflow_dispatch:
+      inputs:
+        resourceGroupName:
+          description: 'Resource Group Name'
+          required: true
+          default: 'FWTest01'
+
 
 permissions:
   id-token: write             # required for OIDC login to Azure
@@ -43,7 +42,7 @@ jobs:
         with:
           scope: resourcegroup
           deploymentName: 'Github.Actions-${{ github.workflow }}-${{ github.run_number }}-VNet'
-          resourceGroupName: ${{ env.resourceGroupName }}
+          resourceGroupName: ${{ inputs.resourceGroupName }}
           region: ${{env.azureRegion }}
           template: Palo-Alto-Firewall/PaloAltoFWvnetDeploy.bicep
       
@@ -53,7 +52,7 @@ jobs:
         with:
           scope: resourcegroup
           deploymentName: 'Github.Actions-${{ github.workflow }}-${{ github.run_number }}-FW'
-          resourceGroupName: ${{ env.resourceGroupName }}
+          resourceGroupName: ${{ inputs.resourceGroupName }}
           region: ${{env.azureRegion }}
           template: Palo-Alto-Firewall/PaloAltoFWdeploy.bicep
           parameters: Palo-Alto-Firewall/PaloAltoFWdeploy.bicepparam
