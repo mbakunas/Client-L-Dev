@@ -12,3 +12,8 @@ New-AzManagementGroupDeployment -ManagementGroupId ExtensisTLG -Location eastus2
 New-AzResourceGroupDeployment -ResourceGroupName Firewall-Test-01 -TemplateFile .\modules\vnet.bicep -name VNetDeploy1
 New-AzResourceGroupDeployment -ResourceGroupName Firewall-Test-01 -TemplateFile .\modules\loadBalancer.bicep -TemplateParameterFile .\modules\loadBalancer.bicepparam -name LbDeploy1
 New-AzResourceGroupDeployment -ResourceGroupName Firewall-Test-01 -TemplateFile .\PaloAltoFWdeploy.bicep -TemplateParameterFile .\PaloAltoFWdeploy.bicepparam -name FwDeploy1
+
+
+# firewall test
+New-AzResourceGroupDeployment -ResourceGroupName FWTest03 -TemplateFile .\PaloAltoFWvnetDeploy.bicep -name VnetDeploy1
+New-AzResourceGroupDeployment -ResourceGroupName FWTest03 -TemplateFile .\PaloAltoFWdeploy.bicep -templateParameterFile .\PaloAltoFWdeploy.bicepparam -name FwDeploy1
