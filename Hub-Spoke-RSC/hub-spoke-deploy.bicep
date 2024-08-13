@@ -38,6 +38,7 @@ module vnet 'Modules/vnet.bicep' = [for (vnet, i) in vnets: {
     vnetName: vnet.name
     vnetLocation: vnet.location
     vnetAddressPrefix: vnet.addressPrefix
+    vnetEncryption: false
     vnetSubnets: vnet.subnets
     vnetDnsServers: vnet.?dnsServers ?? []
     vnetTags: tags
