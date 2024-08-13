@@ -90,9 +90,9 @@ resource paloAltoFireWall 'Microsoft.Compute/virtualMachines@2024-03-01' = {
     networkProfile: {
       networkInterfaces: [
         {
-          id: nicPrivate.id
+          id: nicManagement.id
           properties: {
-            primary: false
+            primary: true
           }
         }
         {
@@ -102,9 +102,9 @@ resource paloAltoFireWall 'Microsoft.Compute/virtualMachines@2024-03-01' = {
           }
         }
         {
-          id: nicManagement.id
+          id: nicPrivate.id
           properties: {
-            primary: true
+            primary: false
           }
         }
       ]
@@ -136,9 +136,6 @@ resource nicPrivate 'Microsoft.Network/networkInterfaces@2020-11-01' = {
     enableIPForwarding: true
     nicType: 'Standard'
   }
-  dependsOn: [
-    nicPublic
-  ]
 }
 
 resource nicPublic 'Microsoft.Network/networkInterfaces@2020-11-01' = {
@@ -165,9 +162,6 @@ resource nicPublic 'Microsoft.Network/networkInterfaces@2020-11-01' = {
     enableIPForwarding: true
     nicType: 'Standard'
   }
-  dependsOn: [
-    nicManagement
-  ]
 }
 
 resource nicManagement 'Microsoft.Network/networkInterfaces@2020-11-01' = {
