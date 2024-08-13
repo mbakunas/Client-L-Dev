@@ -35,9 +35,10 @@ param vnetTags object = {
   runTime: '24x7'  
 }
 
+var deploymentName = deployment().name
 
 module vnet '../Hub-Spoke-RSC/Modules/vnet.bicep' = {
-  name: 'vnet'
+  name: '${deploymentName}-${vnetName}'
   params: {
     vnetName: vnetName
     vnetLocation: vnetLocation
