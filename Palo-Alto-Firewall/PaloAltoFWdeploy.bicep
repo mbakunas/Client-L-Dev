@@ -85,7 +85,7 @@ var firewallsConfig = [for firewall in firewallsNames:{
 
 
 // load balancer
-module loadBalancer './Modules/loadBalancer.bicep' = {
+module loadBalancer '../Modules/loadBalancer.bicep' = {
   name: '${deploymentName}-loadBalancer'
   params: {
     lbName: loadBalancerName
@@ -110,7 +110,7 @@ resource availabilitySet 'Microsoft.Compute/availabilitySets@2022-03-01' = {
 }
  // deploy the firewalls
 
-module firewalls 'Modules/PaloAltoFirewall.bicep' = [for firewall in firewallsConfig: {
+module firewalls '../Modules/PaloAltoFirewall.bicep' = [for firewall in firewallsConfig: {
   name: '${deploymentName}-${firewall.name}'
   scope: resourceGroup()
   dependsOn: [
