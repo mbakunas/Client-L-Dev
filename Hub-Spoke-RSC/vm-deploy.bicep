@@ -10,14 +10,15 @@ param vmAdminUsername string
 @secure()
 param vmAdminPassword string
 
+// need to iterate through a NIC object
 param vnetName string
 param vnetSubnetName string
 param vnetAddressPrefix string
 
-// prepend the deployment name to the resource deployments sort of groups the deployments together
+// prepending the deployment name to the resource deployments sort of groups the child deployments together
 var deploymentName = deployment().name
 
-module vm 'Modules/vm.bicep' = {
+module vm '../Modules/vm.bicep' = {
   name: '${deploymentName}-${vmName}'
   params: {
     vmName: vmName
@@ -30,7 +31,7 @@ module vm 'Modules/vm.bicep' = {
   }
 }
 
-module nicDynamic 'Modules/networkInterfaceCard.bicep' = {
+module nicDynamic '../Modules/networkInterfaceCard.bicep' = {
   name: '${deploymentName}-${vmName}-NIC-dynamic'
   params: {
     nicName: '${vmName}-NIC'
@@ -44,7 +45,7 @@ module nicDynamic 'Modules/networkInterfaceCard.bicep' = {
   ]
 }
 
-module vnet 'Modules/vnet.bicep' = {
+module vnet '../Modules/vnet.bicep' = {
   name: '${deploymentName}-${vnetName}'
   params: {
     vnetName: vnetName
@@ -63,7 +64,7 @@ module vnet 'Modules/vnet.bicep' = {
 }
 
 
-module nicStatic 'Modules/networkInterfaceCard.bicep' = {
+module nicStatic '../Modules/networkInterfaceCard.bicep' = {
   name: '${deploymentName}-${vmName}-NIC-static'
   params: {
     nicName: '${vmName}-NIC'

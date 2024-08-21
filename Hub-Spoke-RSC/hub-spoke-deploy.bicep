@@ -19,7 +19,7 @@ var uniqueRgNames = union(rgNames, rgNames)
 
 
 // create the resource group(s)
-module rg 'Modules/resourceGroup.bicep' = [for (rg, i) in uniqueRgNames: {
+module rg '../Modules/resourceGroup.bicep' = [for (rg, i) in uniqueRgNames: {
   name: 'rg${i}'
   scope: subscription(rg.subscriptionId)
   params: {
@@ -31,7 +31,7 @@ module rg 'Modules/resourceGroup.bicep' = [for (rg, i) in uniqueRgNames: {
 
 
 // deploy vnet(s)
-module vnet 'Modules/vnet.bicep' = [for (vnet, i) in vnets: {
+module vnet '../Modules/vnet.bicep' = [for (vnet, i) in vnets: {
   name: 'vnet${i}'
   scope: resourceGroup(vnet.resourceGroupSubscriptionID, vnet.resourceGroupName)
   params: {
@@ -51,7 +51,7 @@ module vnet 'Modules/vnet.bicep' = [for (vnet, i) in vnets: {
 
 
 // gateway
-module vnetGW 'Modules/vnetGateway.bicep'= {
+module vnetGW '../Modules/vnetGateway.bicep'= {
   name: 'vnetGW'
   scope: resourceGroup(vnets[0].resourceGroupSubscriptionID, vnets[0].resourceGroupName)
   params: {
@@ -69,7 +69,7 @@ module vnetGW 'Modules/vnetGateway.bicep'= {
 
 // vnet peerings
 // create hub/spoke, assume first vnet is the hub
-module hubOutboundPeerings 'Modules/peering.bicep' = [for i in range(1, length(vnets)-1): {
+module hubOutboundPeerings '../Modules/peering.bicep' = [for i in range(1, length(vnets)-1): {
   name: 'hubOutboundPeerings${i-1}'
   scope: resourceGroup(vnets[0].resourceGroupSubscriptionID, vnets[0].resourceGroupName)
   params: {
@@ -87,7 +87,7 @@ module hubOutboundPeerings 'Modules/peering.bicep' = [for i in range(1, length(v
 
 
 
-module hubInboundPeerings 'Modules/peering.bicep' = [for i in range(1, length(vnets)-1): {
+module hubInboundPeerings '../Modules/peering.bicep' = [for i in range(1, length(vnets)-1): {
   name: 'hubInboundPeerings${i-1}'
   scope: resourceGroup(vnets[i].resourceGroupSubscriptionID, vnets[i].resourceGroupName)
   params: {
@@ -107,7 +107,7 @@ module hubInboundPeerings 'Modules/peering.bicep' = [for i in range(1, length(vn
 
 // user defined routes
 
-module routeTables 'Modules/routeTable.bicep' = [for (vnet, i) in vnets: {
+module routeTables '../Modules/routeTable.bicep' = [for (vnet, i) in vnets: {
   name: 'routeTables${i}'
   scope: resourceGroup(vnet.resourceGroupSubscriptionID, vnet.resourceGroupName)
   params: {
