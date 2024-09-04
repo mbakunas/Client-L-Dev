@@ -5,8 +5,6 @@ param loadBalancerLocation string = resourceGroup().location
 param loadBalancerSku object
 param loadBalancerProbe object
 
-param firewallsAvailabilitySetName string
-
 param firewallsVnetName string
 param firewallsPublicSubnetName string
 param firewallsPrivateSubnetName string
@@ -20,10 +18,6 @@ param firewallsAdminPassword string
 
 
 // variables
-var availabilitySetProperties = {
-    platformFaultDomainCount: 2
-    platformUpdateDomainCount: 5
-}
 var deploymentName = deployment().name
 
 var vnetSubnetPublicId = resourceId('Microsoft.Network/virtualNetworks/subnets', firewallsVnetName, firewallsPublicSubnetName)
@@ -98,19 +92,9 @@ module loadBalancer '../Modules/loadBalancer.bicep' = {
 
 
 // firewalls
-
- // create the availability set
-resource availabilitySet 'Microsoft.Compute/availabilitySets@2022-03-01' = {
-  name: firewallsAvailabilitySetName
-  location: loadBalancerLocation
-  properties: availabilitySetProperties
-  sku: {
-    name: 'Aligned'
-  }
-}
  // deploy the firewalls
 
-module firewalls '../Modules/PaloAltoFirewall.bicep' = [for firewall in firewallsConfig: {
+module firewalls '../Modules/PaloAltoFirewall-AZ.bicep' = [for (firewall, i) in firewallsConfig: {
   name: '${deploymentName}-${firewall.name}'
   scope: resourceGroup()
   dependsOn: [
@@ -120,8 +104,8 @@ module firewalls '../Modules/PaloAltoFirewall.bicep' = [for firewall in firewall
     fwVmName: firewall.name
     fwVmLocation: firewall.location
     fwVmSize: firewall.size
+    fwAz: string(((i + 1) % 3) + 1)  // calculate the availability zone (1, 2, 3)
     fwAdminUsername: firewall.adminUsername
-    fwAvailabilitySetId: availabilitySet.id
     fwAdminPassword: firewall.adminPassword
     fwVnetSubnetPrivateId: vnetSubnetPrivateId
     fwVmNicPrivateName: firewall.privateNicName
