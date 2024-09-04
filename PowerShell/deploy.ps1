@@ -17,3 +17,6 @@ New-AzResourceGroupDeployment -ResourceGroupName Firewall-Test-01 -TemplateFile 
 # firewall test
 New-AzResourceGroupDeployment -ResourceGroupName FWTest03 -TemplateFile .\PaloAltoFWvnetDeploy.bicep -name VnetDeploy1
 New-AzResourceGroupDeployment -ResourceGroupName FWTest03 -TemplateFile .\PaloAltoFWdeploy.bicep -templateParameterFile .\PaloAltoFWdeploy.bicepparam -name FwDeploy1
+
+# existing hub test
+New-AzManagementGroupDeployment -ManagementGroupId ExtensisTLG -Location eastus2 -TemplateFile .\hub-spoke-deploy-existingSpoke.bicep -TemplateParameterFile .\hub-spoke-deploy-existingSpoke.bicepparam -name ExistingHubDeploy1

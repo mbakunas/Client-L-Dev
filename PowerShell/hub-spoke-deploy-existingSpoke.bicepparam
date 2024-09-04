@@ -1,9 +1,5 @@
 using 'hub-spoke-deploy-existingSpoke.bicep'
 
-param hubVnetSubscriptionId = 'f0bb6c48-80fd-445c-98cb-c38b5f817d52'
-param hubVnetResourceGroupName = 'HubSpokeTest01'
-param hubVnetName = 'Hub-01'
-
 param vnets = [
   {
     name: 'VNET-EASTUS2-SPOKE-01'
@@ -131,48 +127,14 @@ param vnets = [
       ]
     }
   }
-  {
-    name: 'VNET-EASTUS2-Spoke-03'
-    resourceGroupName: 'HubSpokeTest01'
-    resourceGroupLocation: 'eastus2'
-    resourceGroupSubscriptionID: '93ebbf00-49a3-49cf-acd2-e4a848c1da2e'
-    location: 'eastus2'
-    addressPrefix: '10.3.0.0/16'
-    dnsServers: [
-      '100.0.0.100'
-      '100.0.0.101'
-    ]
-    subnets: [
-      {
-        name: 'Corpnet03'
-        addressPrefix: '10.3.0.0/24'
-        routeTable: 'RT-EASTUS2-Spoke-03-Corpnet03'
-      }
-    ]
-    routeTable: {
-      name: 'RT-EASTUS2-Spoke-03-Corpnet03'
-      disableBgpRoutePropagation: true
-      routes: [
-        {
-          name: 'default'
-          properties: {
-            addressPrefix: '0.0.0.0/0'
-            nextHopType: 'VirtualAppliance'
-            nextHopIpAddress: '10.0.0.52'
-          }
-        }
-        {
-          name: 'AZKMS'
-          properties: {
-            addressPrefix: '52.126.105.2/32'
-            nextHopType: 'Internet'
-          }
-        }
-      ]
-    }
-  }
 ]
 param tags = {
+  location: 'eastus2'
+  environment: 'non-prod'
+  chargeCode: '42'
+  runTime: '24x7'
+}
+param resourceGroupTags = {
   location: 'eastus2'
   environment: 'non-prod'
   chargeCode: '42'

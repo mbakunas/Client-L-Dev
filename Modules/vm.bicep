@@ -2,46 +2,53 @@ targetScope = 'resourceGroup'
 
 
 param vmName string
-param vmLocation string = resourceGroup().location
+param vmLocation string
 param vmSku string
-param vmRedundancy object
+
+param vmAvailabilitySetId string = ''
+param vmAvailabilityZones array = []
 
 param vmAdminUsername string
 
 @secure()
 param vmAdminPassword string
-param vmNicId string
+param vmNicIds array
 
-var vmOSSku = '2022-Datacenter'
+
+param imageReference object = {
+  publisher: 'MicrosoftWindowsServer'
+  offer: 'WindowsServer'
+  sku: '2022-Datacenter'
+  version: 'latest'
+}
+param osDisk object = {
+  name: '${vmName}-OSDisk'
+  createOption: 'FromImage'
+  caching: 'ReadWrite'
+  managedDisk: {
+    storageAccountType: 'Standard_LRS'
+  }
+  deleteOption: 'Delete'
+}
+
+param vmPlan object = {}
 
 resource vm 'Microsoft.Compute/virtualMachines@2024-03-01' = {
   name: vmName
   location: vmLocation
   tags: resourceGroup().tags
-  zones: vmRedundancy.?zone ?? null
+  zones: empty(vmAvailabilityZones) ? vmAvailabilityZones : null
+  plan: empty(vmPlan) ? vmPlan : null
   properties: {
-    availabilitySet: contains(vmRedundancy, 'availabilitySet') ? {
-      id: vmRedundancy.set
+    availabilitySet: empty(vmAvailabilitySetId) ? {
+      id: vmAvailabilitySetId
     } : null    
     hardwareProfile: {
       vmSize: vmSku
     }
     storageProfile: {
-      imageReference: {
-        publisher: 'MicrosoftWindowsServer'
-        offer: 'WindowsServer'
-        sku: vmOSSku
-        version: 'latest'
-      }
-      osDisk: {
-        name: '${vmName}-OSDisk'
-        createOption: 'FromImage'
-        caching: 'ReadWrite'
-        managedDisk: {
-          storageAccountType: 'Standard_LRS'
-        }
-        deleteOption: 'Delete'
-      }
+      imageReference: imageReference
+      osDisk: osDisk
     }
     osProfile: {
       computerName: vmName
@@ -49,11 +56,7 @@ resource vm 'Microsoft.Compute/virtualMachines@2024-03-01' = {
       adminPassword: vmAdminPassword
     }
     networkProfile: {
-      networkInterfaces: [
-        {
-          id: vmNicId
-        }
-      ]
+      networkInterfaces: vmNicIds
     }
   }
 }
