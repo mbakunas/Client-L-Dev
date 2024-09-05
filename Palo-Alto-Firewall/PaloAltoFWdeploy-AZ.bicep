@@ -104,7 +104,7 @@ module firewalls '../Modules/PaloAltoFirewall-AZ.bicep' = [for (firewall, i) in 
     fwVmName: firewall.name
     fwVmLocation: firewall.location
     fwVmSize: firewall.size
-    fwAz: string(((i + 1) % 3) + 1)  // calculate the availability zone (1, 2, 3)
+    fwAz: string(((i + 1) % 3))  // calculate the availability zone (1, 2, 3)
     fwAdminUsername: firewall.adminUsername
     fwAdminPassword: firewall.adminPassword
     fwVnetSubnetPrivateId: vnetSubnetPrivateId

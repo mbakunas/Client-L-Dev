@@ -1,4 +1,4 @@
-using './PaloAltoFWdeploy.bicep'
+using './PaloAltoFWdeploy-AZ.bicep'
 
 param loadBalancerName = 'TEST-FWLB-01'
 param loadBalancerLocation = 'eastus2'
@@ -12,10 +12,7 @@ param loadBalancerProbe = {
   port: 22
   intervalInSeconds: 15
 }
-
-param firewallsAvailabilitySetName = 'TEST-FW-AS-01'
-
-param firewallsVnetName = 'TEST-VNET-01'
+param firewallsVnetName = 'VNET-EASTUS2-SPOKE-01'
 param firewallsPublicSubnetName = 'Public'
 param firewallsPrivateSubnetName = 'Private'
 param firewallsManagementSubnetName = 'FwMgmt'

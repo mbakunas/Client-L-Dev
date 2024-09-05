@@ -4,6 +4,8 @@ $templateFile = ".\hub-spoke-deploy.bicep"
 $templateParameterFile = ".\hub-spoke-deploy-centralus.bicepparam"
 $deploymentName = "HubSpokeDeploy3"
 
+Connect-AzAccount # -Environment AzureGovernment
+
 
 
 New-AzManagementGroupDeployment -ManagementGroupId $managementGroup -Location $location -TemplateFile $templateFile -TemplateParameterFile $templateParameterFile -name $deploymentName
@@ -17,3 +19,4 @@ New-AzResourceGroupDeployment -ResourceGroupName Firewall-Test-01 -TemplateFile 
 # firewall test
 New-AzResourceGroupDeployment -ResourceGroupName FWTest03 -TemplateFile .\PaloAltoFWvnetDeploy.bicep -name VnetDeploy1
 New-AzResourceGroupDeployment -ResourceGroupName FWTest03 -TemplateFile .\PaloAltoFWdeploy.bicep -templateParameterFile .\PaloAltoFWdeploy.bicepparam -name FwDeploy1
+New-AzResourceGroupDeployment -ResourceGroupName HubSpokeTest01 -TemplateFile .\PaloAltoFWdeploy-AZ.bicep -TemplateParameterFile .\PaloAltoFWdeploy-AZ.bicepparam -name FwDeploy1
