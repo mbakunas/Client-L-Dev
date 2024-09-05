@@ -10,6 +10,10 @@
 # except for the parameters builder
 !ParametersFileBuilder.xlsm
 
+# empty files
+blank.*
+empty.*
+
 
 # User-specific files
 *.rsuser
