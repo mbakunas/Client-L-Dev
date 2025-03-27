@@ -10,6 +10,9 @@
 # except for the parameters builder
 !ParametersFileBuilder.xlsm
 
+# and the map-roles spreadsheet
+!*map-roles.xlsx
+
 # empty files
 blank.*
 empty.*
