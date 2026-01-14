@@ -7,8 +7,9 @@ param skuName string = 'Standard_LRS'
 param kind string = 'StorageV2'
 param accessTier string = 'Hot'
 param isVersioningEnabled bool
+param containerName string
 
-resource storageAccount 'Microsoft.Storage/storageAccounts@2025-06-01' = {
+resource storageAccount 'Microsoft.Storage/storageAccounts@2025-01-01' = {
   name: storageAccountName
   location: location
   tags: tags
@@ -26,10 +27,19 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2025-06-01' = {
   }
 }
 
-resource storageAccountBlobServices 'Microsoft.Storage/storageAccounts/blobServices@2025-06-01' = {
+resource storageAccountBlobServices 'Microsoft.Storage/storageAccounts/blobServices@2025-01-01' = {
   parent: storageAccount
   name: 'default'
   properties: {
     isVersioningEnabled: isVersioningEnabled
+  }
+}
+
+// add a container for terraform state files
+resource tfStateContainer 'Microsoft.Storage/storageAccounts/blobServices/containers@2025-01-01' = {
+  parent: storageAccountBlobServices
+  name: containerName
+  properties: {
+    publicAccess: 'None'
   }
 }
